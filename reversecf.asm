@@ -125,7 +125,7 @@ reversecf:
     LDA $09C2
     CMP #$05DD
     BMI .return ; energy < 1501
-    LDA $079f
+    LDA $09C6
     CLC
     ADC #$0009
     CMP $09C8
