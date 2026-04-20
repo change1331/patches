@@ -1,3 +1,10 @@
+; 50 per ammo in hex
+!hp = 0032
+; min hp is always 30*hp per ammo +1
+!minhp = !hp*30+1
+; ammo reach always +1 so 8 means 1/10 works 9 means 0/10 works etc
+!ammo = 0008
+
 lorom
 
 org $90D648
@@ -44,7 +51,6 @@ org $90D6DD
     dw normal, $D706, $D729, reverse1, reverse2, reverse3
 
 org $90FD00
-print pc
 normal:
     LDA $05B6
     BIT #$0007
@@ -63,43 +69,46 @@ normal:
 reverse1:
     LDA $05B6
     BIT #$0007
-    BNE .return1 ; ONCE PER 8 FRAMES
-    INC $09C6 ; MISSILES
-    LDA #$0032
+    BNE .return ; ONCE PER 8 FRAMES
+    LDA #$0001
+    JSL $91DF80 ; MISSILES
+    LDA #$!hp
     JSL $91DF51 ; TAKE 50 ENERGY
     DEC $0DEC
     BEQ $02 ; DONE CFING
-    BPL .return1 ; ANOTHER ROUND
+    BPL .return ; ANOTHER ROUND
     LDA #$000A
     STA $0DEC
     INC $0DEA
-.return1
+.return
     RTS
 reverse2:
     LDA $05B6
     BIT #$0007
-    BNE .return2 ; ONCE PER 8 FRAMES
-    INC $09CA ; SUPERS
-    LDA #$0032
+    BNE .return ; ONCE PER 8 FRAMES
+    LDA #$0001
+    JSL $91DFD3 ; SUPERS
+    LDA #$!hp
     JSL $91DF51 ; TAKE 50 ENERGY
     DEC $0DEC
     BEQ $02 ; DONE CFING
-    BPL .return2 ; ANOTHER ROUND
+    BPL .return ; ANOTHER ROUND
     LDA #$000A
     STA $0DEC
     INC $0DEA
-.return2
+.return
     RTS
 reverse3:
     LDA $05B6
     BIT #$0007
-    BNE .return3 ; ONCE PER 8 FRAMES
-    INC $09CE ; PBS
-    LDA #$0032
+    BNE .return ; ONCE PER 8 FRAMES
+    LDA #$0001
+    JSL $91DFF0 ; PBS
+    LDA #$!hp
     JSL $91DF51 ; TAKE 50 ENERGY
     DEC $0DEC
     BEQ $02 ; DONE CFING
-    BPL .return3 ; ANOTHER ROUND
+    BPL .return ; ANOTHER ROUND
     LDA #$D75B
     STA $0A58
     LDA #$EB52
@@ -108,9 +117,8 @@ reverse3:
     STA $0A94
     LDA #$000C
     STA $0A96
-.return3
+.return
     RTS
-print pc
 reversecf:
     LDA #$0430
     ORA $09B2
@@ -123,23 +131,23 @@ reversecf:
     LDA $0B2C
     BNE .return ; Y SPEED
     LDA $09C2
-    CMP #$05DD
+    CMP #$!minhp
     BMI .return ; energy < 1501
     LDA $09C6
     CLC
-    ADC #$0009
+    ADC #$!ammo
     CMP $09C8
-    BCS .return ; MISSILES + 9 >= MAX 
+    BCS .return ; MISSILES + x >= MAX 
     LDA $09CA
     CLC
-    ADC #$0009
+    ADC #$!ammo
     CMP $09CC
-    BCS .return ; SUPERS + 9 >= MAX 
+    BCS .return ; SUPERS + x >= MAX 
     LDA $09CE
     CLC
-    ADC #$0009
+    ADC #$!ammo
     CMP $09D0
-    BCS .return ; TOO MANY 
+    BCS .return ; PBS + x >= MAX
     LDA #$0003
     STA $0DEA
     SEC
