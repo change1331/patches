@@ -1,7 +1,5 @@
-; 50 per ammo in hex
-!hp = 0032
-; min hp is always 30*hp per ammo +1
-!minhp = !hp*30+1
+; min hp is > 198
+!minhp = 00C7
 ; ammo reach always +1 so 8 means 1/10 works 9 means 0/10 works etc
 !ammo = 0008
 
@@ -56,7 +54,7 @@ normal:
     BIT #$0007
     BNE .return ; ONCE PER 8 FRAMES
     DEC $09C6 ; MISSILES
-    LDA #$!hp
+    LDA #$0007
     JSL $91DF12 ; GIVE SAMUS 50 ENERGY
     DEC $0DEC
     BEQ $02 ; DONE CFING
@@ -72,8 +70,8 @@ reverse1:
     BNE .return ; ONCE PER 8 FRAMES
     LDA #$0001
     JSL $91DF80 ; MISSILES
-    LDA #$!hp
-    JSL $91DF51 ; TAKE 50 ENERGY
+    LDA #$0007
+    JSL $91DF51 ; TAKE 7 ENERGY
     DEC $0DEC
     BEQ $02 ; DONE CFING
     BPL .return ; ANOTHER ROUND
@@ -88,8 +86,8 @@ reverse2:
     BNE .return ; ONCE PER 8 FRAMES
     LDA #$0001
     JSL $91DFD3 ; SUPERS
-    LDA #$!hp
-    JSL $91DF51 ; TAKE 50 ENERGY
+    LDA #$0007
+    JSL $91DF51 ; TAKE 7 ENERGY
     DEC $0DEC
     BEQ $02 ; DONE CFING
     BPL .return ; ANOTHER ROUND
@@ -104,11 +102,15 @@ reverse3:
     BNE .return ; ONCE PER 8 FRAMES
     LDA #$0001
     JSL $91DFF0 ; PBS
-    LDA #$!hp
-    JSL $91DF51 ; TAKE 50 ENERGY
     DEC $0DEC
-    BEQ $02 ; DONE CFING
+    BEQ .done ; DONE CFING
+    LDA #$0006
+    JSL $91DF51 ; TAKE 6 ENERGY
+    LDA $0DEC
     BPL .return ; ANOTHER ROUND
+.done
+    LDA #$0004
+    JSL $91DF51 ; TAKE 5 ENERGY
     LDA #$D75B
     STA $0A58
     LDA #$EB52
