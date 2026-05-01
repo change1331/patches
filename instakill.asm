@@ -25,6 +25,11 @@ org $91DF6B
     STZ $09D6     ; reserves = 0
 	STZ $0A4C     ; Samus subhealth = 0
 	STZ $09C2     ; Samus health = 0
+; baby
+org $A9C573
+    STZ $09D6     ; reserves = 0
+	STZ $0A4C     ; Samus subhealth = 0
+	STZ $09C2     ; Samus health = 0
 
 ; shine spark
 org $90D000
